@@ -9,13 +9,6 @@ pipeline {
     }
 
     stages {
-
-        stage('Azure Login') {
-            steps {
-                // Authenticate using Azure CLI with user credentials
-                sh 'az login'
-            }
-        }
         stage('Create Resource Group and Storage Account') {
             steps {           
                 script {
