@@ -2,9 +2,9 @@ pipeline {
     agent any
     
     environment {
-        RESOURCE_GROUP_NAME = 'tfstaterg'
-        STORAGE_ACCOUNT_NAME = 'lilibackendsa'
-        CONTAINER_NAME = 'tfstatect'
+        RESOURCE_GROUP_NAME = 'resourceGroupRemoteBackend'
+        STORAGE_ACCOUNT_NAME = 'storageAccountRemoteBackend'
+        CONTAINER_NAME = 'containerRemoteBackend'
         AZURE_CREDENTIALS_ID = 'lili-acr-credentials-id' // ID of the Azure credentials configured in Jenkins
     }
 
