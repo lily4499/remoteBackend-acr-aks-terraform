@@ -9,8 +9,15 @@ pipeline {
     }
 
     stages {
-        stage('Create Resource Group and Storage Account') {
+
+        stage('Azure Login') {
             steps {
+                // Authenticate using Azure CLI with user credentials
+                sh 'az login'
+            }
+        }
+        stage('Create Resource Group and Storage Account') {
+            steps {           
                 script {
                     // Check if the resource group exists
                     def resourceGroupExists = sh(script: "az group show --name ${RESOURCE_GROUP_NAME} --output json", returnStatus: true)
