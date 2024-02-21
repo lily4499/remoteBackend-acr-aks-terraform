@@ -49,7 +49,7 @@ pipeline {
             }
         }
         
-        stage('Trigger Jenkins Job to Create ACR and AKS') {
+        stage('Trigger Jenkins Job to initialize backend and Create ACR and AKS') {
             when {
                 expression {
                     // Run this stage if the previous stage (or any previous stage) has succeeded
