@@ -6,7 +6,6 @@ pipeline {
         RESOURCE_GROUP_NAME = 'tfstaterg'
         STORAGE_ACCOUNT_NAME = 'lilibackendsa'
         CONTAINER_NAME = 'tfstatect'
-        AZURE_CREDENTIALS_ID = 'lili-acr-credentials-id' // ID of the Azure credentials configured in Jenkins
     }
 
     stages {
@@ -40,8 +39,11 @@ pipeline {
         stage('Create Blob Container') {
             steps {
                 script {
+                    // Retrieve the storage account key
+                    def storage_account_key = sh(script: "az storage account keys list --account-name ${STORAGE_ACCOUNT_NAME} --resource-group ${RESOURCE_GROUP_NAME} --query '[0].value' -o tsv", returnStdout: true).trim()
+
                     // Create blob container
-                    sh "az storage container create --name ${CONTAINER_NAME} --account-name ${STORAGE_ACCOUNT_NAME} "
+                    sh "az storage container create --name ${CONTAINER_NAME} --account-name ${STORAGE_ACCOUNT_NAME} --account-key ${storage_account_key}"
                 }
             }
         }
