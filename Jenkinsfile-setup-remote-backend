@@ -42,18 +42,27 @@ pipeline {
             }
         }
         
+        stage('Get Connection String') {
+            steps {
+                script {
+                    // Get connection string for the storage account
+                    def connectionString = sh(script: "az storage account show-connection-string --name ${STORAGE_ACCOUNT_NAME} --resource-group ${RESOURCE_GROUP_NAME} --query connectionString -o tsv", returnStdout: true).trim()
+                    
+                    // Set the connection string as an environment variable
+                    env.STORAGE_CONNECTION_STRING = connectionString
+                }
+            }
+        }
         
         stage('Create Blob Container') {
             steps {
                 script {
-                    // Retrieve the storage account key
-                    def storage_account_key = sh(script: "az storage account keys list --account-name ${STORAGE_ACCOUNT_NAME} --resource-group ${RESOURCE_GROUP_NAME} --query '[0].value' -o tsv", returnStdout: true).trim()
-
                     // Create blob container
-                    sh "az storage container create --name ${CONTAINER_NAME} --account-name ${STORAGE_ACCOUNT_NAME} --account-key ${storage_account_key}"
+                    sh "az storage container create --name ${CONTAINER_NAME} --connection-string '${env.STORAGE_CONNECTION_STRING}'"
                 }
             }
         }
+        
         
         stage('Trigger Jenkins Job to Create ACR and AKS') {
             when {
