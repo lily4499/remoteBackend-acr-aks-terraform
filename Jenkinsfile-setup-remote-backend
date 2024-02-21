@@ -14,23 +14,23 @@ pipeline {
             steps {
                 script {
                     // Check if the resource group exists
-                    if az group show --name ${RESOURCE_GROUP_NAME} &>/dev/null; then {
+                    def resourceGroupExists = sh(script: "az group show --name ${RESOURCE_GROUP_NAME} --output json", returnStatus: true)
+                    
+                    if (resourceGroupExists == 0) {
                         echo "Resource group '${RESOURCE_GROUP_NAME}' already exists."
                     } else {
                         echo "Resource group '${RESOURCE_GROUP_NAME}' does not exist. Creating..."
                         sh "az group create --name ${RESOURCE_GROUP_NAME} --location $location"
                     }
-                    // Create resource group if not exists
-               //     sh "az group create --name ${RESOURCE_GROUP_NAME} --location $location --output none"
                     
                     // Check if the storage account already exists
-                    def storageAccountExists = sh(script: "az storage account check-name --name ${STORAGE_ACCOUNT_NAME} --output json", returnStdout: true).trim()
+                    def storageAccountExists = sh(script: "az storage account check-name --name ${STORAGE_ACCOUNT_NAME} --output json", returnStatus: true)
                     
-                    // Create storage account if it doesn't exist
-                    if (storageAccountExists.contains('"nameAvailable": true')) {
-                        sh "az storage account create --resource-group ${RESOURCE_GROUP_NAME} --name ${STORAGE_ACCOUNT_NAME} --sku Standard_LRS --encryption-services blob"
-                    } else {
+                    if (storageAccountExists == 0) {
                         echo "Storage account ${STORAGE_ACCOUNT_NAME} already exists."
+                    } else {
+                        echo "Storage account ${STORAGE_ACCOUNT_NAME} does not exist. Creating..."
+                        sh "az storage account create --resource-group ${RESOURCE_GROUP_NAME} --name ${STORAGE_ACCOUNT_NAME} --sku Standard_LRS --encryption-services blob"
                     }
                 }
             }
